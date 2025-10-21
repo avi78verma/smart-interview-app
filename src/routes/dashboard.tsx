@@ -11,19 +11,16 @@ import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-
 export const Dashboard = () => {
   const [interviews, setInterviews] = useState<Interview[]>([]);
   const [loading, setLoading] = useState(false);
   const { userId } = useAuth();
-
   useEffect(() => {
     setLoading(true);
     const interviewQuery = query(
       collection(db, "interviews"),
       where("userId", "==", userId)
     );
-
     const unsubscribe = onSnapshot(
       interviewQuery,
       (snapshot) => {

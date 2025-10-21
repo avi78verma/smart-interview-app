@@ -12,8 +12,7 @@ import {
   ShieldCheck,
   Clock,
 } from "lucide-react";
-import React from 'react'; // React import add karna achha practice hai
-
+import React from 'react'; 
 export const AboutPage = () => {
   return (
     <div className="container mx-auto max-w-5xl py-12 md:py-20 px-4">
@@ -106,7 +105,7 @@ export const AboutPage = () => {
   );
 };
 
-// Helper Component (isi file mein neeche add kar dein)
+// Helper Component
 const InfoCard = ({
   icon,
   title,

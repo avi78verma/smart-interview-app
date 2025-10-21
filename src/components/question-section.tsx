@@ -4,18 +4,14 @@ import { cn } from "../lib/utils";
 import { TooltipButton } from "./tooltip-button";
 import { Volume2, VolumeX } from "lucide-react";
 import { RecordAnswer } from "./record-answer";
-
 interface QuestionSectionProps {
   questions: { question: string; answer: string }[];
 }
-
 export const QuestionSection = ({ questions }: QuestionSectionProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isWebCam, setIsWebCam] = useState(false);
-
   const [currentSpeech, setCurrentSpeech] =
     useState<SpeechSynthesisUtterance | null>(null);
-
   const handlePlayQuestion = (qst: string) => {
     if (isPlaying && currentSpeech) {
       // stop the speech if already playing
@@ -28,7 +24,6 @@ export const QuestionSection = ({ questions }: QuestionSectionProps) => {
         window.speechSynthesis.speak(speech);
         setIsPlaying(true);
         setCurrentSpeech(speech);
-
         // handle the speech end
         speech.onend = () => {
           setIsPlaying(false);
@@ -37,7 +32,6 @@ export const QuestionSection = ({ questions }: QuestionSectionProps) => {
       }
     }
   };
-
   return (
     <div className="w-full min-h-96 border rounded-md p-4">
       <Tabs

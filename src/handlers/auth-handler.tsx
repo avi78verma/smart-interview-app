@@ -5,16 +5,12 @@ import { useAuth, useUser } from "@clerk/clerk-react";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
 const AuthHanlder = () => {
   const { isSignedIn } = useAuth();
   const { user } = useUser();
-
   const pathname = useLocation().pathname;
   const navigate = useNavigate();
-
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     const storeUserData = async () => {
       if (isSignedIn && user) {
@@ -30,7 +26,6 @@ const AuthHanlder = () => {
               createdAt: serverTimestamp(),
               updateAt: serverTimestamp(),
             };
-
             await setDoc(doc(db, "users", user.id), userData);
           }
         } catch (error) {
@@ -40,14 +35,11 @@ const AuthHanlder = () => {
         }
       }
     };
-
     storeUserData();
   }, [isSignedIn, user, pathname, navigate]);
-
   if (loading) {
     return <LoaderPage />;
   }
-
   return null;
 };
 

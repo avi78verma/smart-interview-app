@@ -10,7 +10,6 @@ import { NavigationRoutes } from "./navigation-routes";
 import { useAuth } from "@clerk/clerk-react";
 import { NavLink } from "react-router-dom";
 import { cn } from "../lib/utils";
-
 export const ToggleContainer = () => {
   const { userId } = useAuth();
   return (
@@ -22,7 +21,6 @@ export const ToggleContainer = () => {
         <SheetHeader>
           <SheetTitle />
         </SheetHeader>
-
         <nav className="gap-6 flex flex-col items-start">
           <NavigationRoutes isMobile />
           {userId && (

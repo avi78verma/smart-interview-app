@@ -1,7 +1,5 @@
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
 import {
   Mail,
@@ -9,10 +7,12 @@ import {
   MapPin,
   Twitter,
   Linkedin,
-  Instagram, // GitHub ki jagah Instagram
+  Instagram,
+  User,
+  Book,
 } from "lucide-react";
 import React, { useRef, useState } from "react";
-// import emailjs from '@emailjs/browser';
+import emailjs from '@emailjs/browser';
 
 // Custom WhatsApp Icon Component (SVG)
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -37,126 +37,100 @@ export const ContactPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(null);
 
-  // const sendEmail = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setIsSubmitting(true);
-  //   setSubmitStatus(null);
-
-  //   if (form.current) {
-  //     emailjs.sendForm(
-  //       'YOUR_SERVICE_ID',
-  //       'YOUR_TEMPLATE_ID',
-  //       form.current,
-  //       'YOUR_PUBLIC_KEY'
-  //     )
-  //     .then((result) => {
-  //         setSubmitStatus('success');
-  //         form.current?.reset();
-  //     }, (error) => {
-  //         setSubmitStatus('error');
-  //     })
-  //     .finally(() => {
-  //       setIsSubmitting(false);
-  //     });
-  //   } else {
-  //     setSubmitStatus('error');
-  //     setIsSubmitting(false);
-  //   }
-  // };
-
+  const sendEmail = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+ if (form.current) {
+      emailjs.sendForm(
+        'service_8cri54e',      
+        'template_cmpq9wm',     
+        form.current,
+        '_10p-fzBMXJx9KQIm'   
+      )
+      .then(() => {
+          setSubmitStatus('success');
+          form.current?.reset();
+      }, (error: any) => {
+          console.error('FAILED...', error.text);
+          setSubmitStatus('error');
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
+    } else {
+      setSubmitStatus('error');
+      setIsSubmitting(false);
+    }
+  };
   return (
-    <div className="container mx-auto max-w-5xl py-12 md:py-20 px-4">
-      {/* Hero Section */}
-      <div className="text-center mb-16">
-        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
-          Get In Touch With Us
-        </h1>
-        <p className="mt-6 text-xl text-muted-foreground">
-          We'd love to hear from you! Fill out the form below or reach us directly.
-        </p>
-      </div>
+    <div className="w-full bg-white">
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 min-h-[80vh]">
+        {/* Left Side: Information */}
+        <div className="bg-gray-100 p-8 md:p-12 flex flex-col justify-between rounded-l-lg">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h1>
+            <p className="text-gray-600 mb-12">
+              Koi sawal hai ya koi suggestion? Hum aapse sunna chahenge.
+            </p>
+            <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                <Phone className="w-6 h-6 text-primary" />
+                <a href="tel:+917869495199" className="text-gray-700 hover:underline">+91 78694 95199</a>
+              </div>
+              <div className="flex items-center gap-4">
+                <Mail className="w-6 h-6 text-primary" />
+                <a href="mailto:av400346@gmail.com" className="text-gray-700 hover:underline">av400346@gmail.com</a>
+              </div>
+              <div className="flex items-start gap-4">
+                <MapPin className="w-6 h-6 text-primary mt-1" />
+                <p className="text-gray-700">BGI BHOPAL, <br />BHOPAL, MADHYAPRADESH, 462022</p>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-6 mt-12">
+            <a href="https://wa.me/917869495199" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-green-500 transition-colors"><WhatsAppIcon className="w-6 h-6" /></a>
+            <a href="https://x.com/itz_avi__?t=iJAMQtbR7g0-l6BSWs7dwQ&s=08"  target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-400 transition-colors"><Twitter className="w-6 h-6" /></a>
+            <a href="https://www.linkedin.com/in/amanverma7869/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-700 transition-colors"><Linkedin className="w-6 h-6" /></a>
+            <a href="https://www.instagram.com/zero_emotions_.0" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-pink-500 transition-colors"><Instagram className="w-6 h-6" /></a>
+          </div>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        {/* Contact Form Section */}
-        <Card className="hover:shadow-lg hover:scale-[1.005] transition-all duration-300 ease-in-out">
-          <CardHeader>
-            <CardTitle className="text-3xl">Send Us a Message</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form ref={form}  className="space-y-6">
-              <div>
-                <Label htmlFor="name">Your Name</Label>
-                <Input id="name" type="text" placeholder="John Doe" name="name" required />
+        {/* Right Side: Form */}
+        <div className="p-8 md:p-12 flex items-center justify-center bg-white rounded-r-lg">
+          <div className="w-full max-w-md">
+            <h2 className="text-3xl font-bold text-gray-900 mb-8">Send a Message</h2>
+            <form ref={form} onSubmit={sendEmail} className="space-y-6">
+              
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Input id="name" type="text" placeholder="Your Name" name="name" required className="pl-10 h-12" />
               </div>
-              <div>
-                <Label htmlFor="email">Your Email</Label>
-                <Input id="email" type="email" placeholder="name@example.com" name="email" required />
+              
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Input id="email" type="email" placeholder="Your Email" name="email" required className="pl-10 h-12" />
               </div>
-              <div>
-                <Label htmlFor="subject">Subject</Label>
-                <Input id="subject" type="text" placeholder="Inquiry about pricing" name="subject" required />
+
+              <div className="relative">
+                <Book className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Input id="subject" type="text" placeholder="Subject" name="subject" required className="pl-10 h-12" />
               </div>
+
               <div>
-                <Label htmlFor="message">Your Message</Label>
-                <Textarea id="message" placeholder="Type your message here." rows={5} name="message" required />
+                <Textarea id="message" placeholder="Type your message here..." rows={5} name="message" required className="min-h-[120px]" />
               </div>
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
+              
+              <Button type="submit" className="w-full h-12 text-base" disabled={isSubmitting}>
                 {isSubmitting ? 'Sending...' : 'Send Message'}
               </Button>
+              
               {submitStatus === 'success' && (<p className="mt-4 text-center text-green-600">Message sent successfully!</p>)}
               {submitStatus === 'error' && (<p className="mt-4 text-center text-red-600">Failed to send. Please try again.</p>)}
             </form>
-          </CardContent>
-        </Card>
-
-        {/* Contact Information & Socials */}
-        <div className="space-y-8">
-          <Card className="hover:shadow-lg hover:scale-[1.005] transition-all duration-300 ease-in-out">
-            <CardHeader>
-              <CardTitle className="text-3xl">Our Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <Mail className="w-6 h-6 text-primary" />
-                <a href="mailto:av400346@gmail.com" className="text-foreground hover:underline">av400346@gmail.com</a>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Phone className="w-6 h-6 text-primary" />
-                <a href="tel:+917869495199" className="text-foreground hover:underline">+917869495199</a>
-              </div>
-              <div className="flex items-start space-x-3">
-                <MapPin className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                <p className="text-foreground">BGI BHOPAL, <br /> BHOPAL, MADHYAPRADESH, 462022</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-lg hover:scale-[1.005] transition-all duration-300 ease-in-out">
-            <CardHeader>
-              <CardTitle className="text-3xl">Connect With Us</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-wrap items-center gap-6">
-              {/* === WHATSAPP ICON & LINK === */}
-              <a href="https://wa.me/917869495199" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary transition-colors">
-                <WhatsAppIcon className="w-6 h-6" />
-                <span className="sr-only">WhatsApp</span>
-              </a>
-              <a href="https://x.com/itz_avi__?t=iJAMQtbR7g0-l6BSWs7dwQ&s=08"  target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary transition-colors">
-                <Twitter className="w-6 h-6" />
-                <span className="sr-only">Twitter</span>
-              </a>
-              <a href="https://www.linkedin.com/in/amanverma7869/" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary transition-colors">
-                <Linkedin className="w-6 h-6" />
-                <span className="sr-only">LinkedIn</span>
-              </a>
-              {/* === INSTAGRAM ICON & LINK === */}
-              <a href="https://www.instagram.com/zero_emotions_.0" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary transition-colors">
-                <Instagram className="w-6 h-6" />
-                <span className="sr-only">Instagram</span>
-              </a>
-            </CardContent>
-          </Card>
+          </div>
         </div>
+
       </div>
     </div>
   );

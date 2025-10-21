@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useAuth } from "@clerk/clerk-react";
 import {
   CircleStop,
@@ -27,18 +26,15 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../config/firebase.config";
-
 interface RecordAnswerProps {
   question: { question: string; answer: string };
   isWebCam: boolean;
   setIsWebCam: (value: boolean) => void;
 }
-
 interface AIResponse {
   ratings: number;
   feedback: string;
 }
-
 export const RecordAnswer = ({
   question,
   isWebCam,
@@ -54,41 +50,33 @@ export const RecordAnswer = ({
     continuous: true,
     useLegacyResults: false,
   });
-
   const [userAnswer, setUserAnswer] = useState("");
   const [isAiGenerating, setIsAiGenerating] = useState(false);
   const [aiResult, setAiResult] = useState<AIResponse | null>(null);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const { userId } = useAuth();
   const { interviewId } = useParams();
-
   const recordUserAnswer = async () => {
     if (isRecording) {
       stopSpeechToText();
-
       if (userAnswer?.length < 30) {
         toast.error("Error", {
           description: "Your answer should be more than 30 characters",
         });
-
         return;
       }
-
       //   ai result
       const aiResult = await generateResult(
         question.question,
         question.answer,
         userAnswer
       );
-
       setAiResult(aiResult);
     } else {
       startSpeechToText();
     }
   };
-
   const cleanJsonResponse = (responseText: string) => {
     // Step 1: Trim any surrounding whitespace
     let cleanText = responseText.trim();
@@ -118,10 +106,8 @@ export const RecordAnswer = ({
       Please compare the user's answer to the correct answer, and provide a rating (from 1 to 10) based on answer quality, and offer feedback for improvement.
       Return the result in JSON format with the fields "ratings" (number) and "feedback" (string).
     `;
-
     try {
       const aiResult = await chatSession.sendMessage(prompt);
-
       const parsedResult: AIResponse = cleanJsonResponse(
         aiResult.response.text()
       );
@@ -136,32 +122,25 @@ export const RecordAnswer = ({
       setIsAiGenerating(false);
     }
   };
-
   const recordNewAnswer = () => {
     setUserAnswer("");
     stopSpeechToText();
     startSpeechToText();
   };
-
   const saveUserAnswer = async () => {
     setLoading(true);
-
     if (!aiResult) {
       return;
     }
-
     const currentQuestion = question.question;
     try {
       // query the firbase to check if the user answer already exists for this question
-
       const userAnswerQuery = query(
         collection(db, "userAnswers"),
         where("userId", "==", userId),
         where("question", "==", currentQuestion)
       );
-
       const querySnap = await getDocs(userAnswerQuery);
-
       // if the user already answerd the question dont save it again
       if (!querySnap.empty) {
         console.log("Query Snap Size", querySnap.size);
@@ -171,7 +150,6 @@ export const RecordAnswer = ({
         return;
       } else {
         // save the user answer
-
         await addDoc(collection(db, "userAnswers"), {
           mockIdRef: interviewId,
           question: question.question,
@@ -182,10 +160,8 @@ export const RecordAnswer = ({
           userId,
           createdAt: serverTimestamp(),
         });
-
         toast("Saved", { description: "Your answer has been saved.." });
       }
-
       setUserAnswer("");
       stopSpeechToText();
     } catch (error) {
@@ -198,23 +174,18 @@ export const RecordAnswer = ({
       setOpen(!open);
     }
   };
-
   useEffect(() => {
     if (results) {
         // Explicitly type the filtered results to help TypeScript
         const filteredResults: ResultType[] = (results as any[]).filter(
             (result): result is ResultType => result && typeof result === 'object' && 'transcript' in result
         );
-
         const combineTranscripts = filteredResults
             .map((result) => result.transcript)
             .join(" ");
-
         setUserAnswer(combineTranscripts);
     }
   }, [results]);
-
-
   return (
     <div className="w-full flex flex-col items-center gap-8 mt-4">
       {/* save modal */}
@@ -224,7 +195,6 @@ export const RecordAnswer = ({
         onConfirm={saveUserAnswer}
         loading={loading}
       />
-
       <div className="w-full h-[400px] md:w-96 flex flex-col items-center justify-center border p-4 bg-gray-50 rounded-md">
         {isWebCam ? (
           <WebCam

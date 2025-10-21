@@ -1,12 +1,9 @@
-// import { cn } from "@/lib/utils";
 import { cn } from "../lib/utils";
-
 interface HeadingsProps {
   title: string;
   description?: string;
   isSubHeading?: boolean;
 }
-
 export const Headings = ({
   title,
   description,

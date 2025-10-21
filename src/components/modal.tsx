@@ -5,9 +5,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-
-// "@/components/ui/dialog";
-
 interface ModalProps {
   title: string;
   description: string;
@@ -15,7 +12,6 @@ interface ModalProps {
   onClose: () => void;
   children?: React.ReactNode;
 }
-
 const Modal = ({
   title,
   description,
@@ -28,7 +24,6 @@ const Modal = ({
       onClose();
     }
   };
-
   return (
     <Dialog open={isOpen} onOpenChange={onChange}>
       <DialogContent>

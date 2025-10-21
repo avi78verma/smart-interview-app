@@ -6,7 +6,6 @@ import {
 } from "../components/ui/tooltip";
 import { Button } from "../components/ui/button";
 import { Loader } from "lucide-react";
-
 // assuming the button variants types are something like following
 type ButtonVariant =
   | "ghost"
@@ -28,7 +27,6 @@ interface TooltipButtonProps {
   disbaled?: boolean;
   loading?: boolean;
 }
-
 export const TooltipButton = ({
   content,
   icon,

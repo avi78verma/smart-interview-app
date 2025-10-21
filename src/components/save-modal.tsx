@@ -1,13 +1,11 @@
 import Modal from "./modal";
 import { Button } from "./ui/button";
-
 interface SaveModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   loading: boolean;
 }
-
 export const SaveModal = ({
   isOpen,
   onClose,

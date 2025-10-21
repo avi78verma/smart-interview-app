@@ -6,16 +6,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "./ui/breadcrumb";
-
-// "@/components/ui/breadcrumb";
 import { Home } from "lucide-react";
 import React from "react";
-
 interface CustomBreadCrumbProps {
   breadCrumbPage: string;
   breadCrumpItems?: { link: string; label: string }[];
 }
-
 export const CustomBreadCrumb = ({
   breadCrumbPage,
   breadCrumpItems,
@@ -32,7 +28,6 @@ export const CustomBreadCrumb = ({
             Home
           </BreadcrumbLink>
         </BreadcrumbItem>
-
         {breadCrumpItems &&
           breadCrumpItems.map((item, i) => (
             <React.Fragment key={i}>

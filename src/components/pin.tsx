@@ -10,18 +10,15 @@ import { Badge } from "./ui/badge";
 import { cn } from "../lib/utils";
 import { TooltipButton } from "./tooltip-button";
 import { Eye, Newspaper, Sparkles } from "lucide-react";
-
 interface InterviewPinProps {
   interview: Interview;
   onMockPage?: boolean;
 }
-
 export const InterviewPin = ({
   interview,
   onMockPage = false,
 }: InterviewPinProps) => {
   const navigate = useNavigate();
-
   return (
     <Card className="p-4 rounded-md shadow-none hover:shadow-md shadow-gray-100 cursor-pointer transition-all space-y-4">
       <CardTitle className="text-lg">{interview?.position}</CardTitle>
@@ -37,7 +34,6 @@ export const InterviewPin = ({
           </Badge>
         ))}
       </div>
-
       <CardFooter
         className={cn(
           "w-full flex items-center p-0",
@@ -53,7 +49,6 @@ export const InterviewPin = ({
             { timeStyle: "short" }
           )}`}
         </p>
-
         {!onMockPage && (
           <div className="flex items-center justify-center">
             <TooltipButton
@@ -67,7 +62,6 @@ export const InterviewPin = ({
               icon={<Eye />}
               loading={false}
             />
-
             <TooltipButton
               content="Feedback"
               buttonVariant={"ghost"}
@@ -81,7 +75,6 @@ export const InterviewPin = ({
               icon={<Newspaper />}
               loading={false}
             />
-
             <TooltipButton
               content="Start"
               buttonVariant={"ghost"}

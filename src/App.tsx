@@ -7,9 +7,9 @@ import ProtectRoutes from "./layouts/protected-routes";
 import { MainLayout } from "./layouts/main-layout";
 
 import HomePage from "./routes/home";
-import { ContactPage } from "./routes/ContactPage";     // Aapka page
-import { AboutPage } from "./routes/AboutPage";       // Aapka page
-import { ServicesPage } from "./routes/ServicesPage";   // Aapka page
+import { ContactPage } from "./routes/ContactPage";   
+import { AboutPage } from "./routes/AboutPage";     
+import { ServicesPage } from "./routes/ServicesPage"; 
 import { SignInPage } from "./routes/sign-in";
 import { SignUpPage } from "./routes/sign-up";
 import { Generate } from "./components/generate";
@@ -18,8 +18,7 @@ import { CreateEditPage } from "./routes/create-edit-page";
 import { MockLoadPage } from "./routes/mock-load-page";
 import { MockInterviewPage } from "./routes/mock-interview-page";
 import { Feedback } from "./routes/feedback";
-import { ComingSoonPage } from "./routes/coming-soon"; // Utility page
-import { NotFoundPage } from "./routes/not-found";   // Utility page
+import { ComingSoonPage } from "./routes/coming-soon"; 
 
 const App = () => {
   return (
@@ -38,7 +37,7 @@ const App = () => {
           <Route path="/services/resume-building" element={<ComingSoonPage />} />
           
           {/* 404 Page - Yeh hamesha Public Routes mein sabse neeche hona chahiye */}
-          <Route path="*" element={<NotFoundPage />} />
+       
         </Route>
         {/* --- Public Routes End --- */}
 

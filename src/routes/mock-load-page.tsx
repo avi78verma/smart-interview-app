@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { db } from "../config/firebase.config";
 import { Interview } from "../types";
 import { doc, getDoc } from "firebase/firestore";
@@ -11,15 +10,12 @@ import { Lightbulb, Sparkles, WebcamIcon } from "lucide-react";
 import { InterviewPin } from "../components/pin";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
 import WebCam from "react-webcam";
-
 export const MockLoadPage = () => {
   const { interviewId } = useParams<{ interviewId: string }>();
   const [interview, setInterview] = useState<Interview | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isWebCamEnabled, setIsWebCamEnabled] = useState(false);
-
   const navigate = useNavigate();
-
   useEffect(() => {
     setIsLoading(true);
     const fetchInterview = async () => {
