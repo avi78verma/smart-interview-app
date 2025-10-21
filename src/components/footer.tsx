@@ -1,124 +1,8 @@
-// import { Link } from "react-router-dom";
-// import { Facebook, Twitter, Instagram, Linkedin, LucideIcon } from "lucide-react";
-// // import { ModeToggle } from "./theme-toggle"; // <-- YAHAN SE HATA DIYA GAYA HAI
-
-// // Helper component for footer links
-// const FooterLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
-//   <li className="mb-2">
-//     <Link
-//       to={to}
-//       className="text-muted-foreground hover:text-primary transition-colors"
-//     >
-//       {children}
-//     </Link>
-//   </li>
-// );
-
-// // Helper component for social media links
-// const SocialLink = ({ href, Icon }: { href: string; Icon: LucideIcon }) => (
-//   <a
-//     href={href}
-//     target="_blank" // Naye tab mein kholne ke liye
-//     rel="noopener noreferrer" // Security ke liye
-//     className="text-muted-foreground hover:text-primary transition-colors"
-//   >
-//     <Icon className="w-5 h-5" />
-//   </a>
-// );
-
-// export const Footer = () => {
-//   return (
-//     <footer className="bg-background border-t">
-//       <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-//         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-
-//           {/* Column 1: Quick Links */}
-//           <div>
-//             <h3 className="font-bold text-lg mb-4">Quick Links</h3>
-//             <ul>
-//               <FooterLink to="/">Home</FooterLink>
-//               <FooterLink to="/contact">Contact Us</FooterLink>
-//               <FooterLink to="/about">About Us</FooterLink>
-//               <FooterLink to="/services">Services</FooterLink>
-//             </ul>
-//           </div>
-
-//           {/* Column 2: About Us */}
-//           <div>
-//             <h3 className="font-bold text-lg mb-4">About Us</h3>
-//             <p className="text-muted-foreground text-sm">
-//               We are committed to helping you unlock your full potential with
-//               AI-powered tools. Our platform offers a wide range of resources to
-//               improve your interview skills and chances of success.
-//             </p>
-//           </div>
-
-//           {/* Column 3: Services */}
-//           <div>
-//             <h3 className="font-bold text-lg mb-4">Services</h3>
-//             <ul>
-//               <FooterLink to="/services/interview-prep">
-//                 Interview Preparation
-//               </FooterLink>
-//               <FooterLink to="/services/career-coaching">
-//                 Career Coaching
-//               </FooterLink>
-//               <FooterLink to="/services/resume-building">
-//                 Resume Building
-//               </FooterLink>
-//             </ul>
-//           </div>
-
-//           {/* Column 4: Contact Us */}
-//           <div>
-//             <h3 className="font-bold text-lg mb-4">Contact Us</h3>
-//             <address className="text-muted-foreground text-sm not-italic mb-4">
-//               {/* === APNA ADDRESS YAHAN BADLEIN === */}
-//               Aapka Address Line 1,<br />
-//               Aapka Shahar, State - ZIP Code
-//             </address>
-
-//             {/* === APNE SOCIAL LINKS YAHAN BADLEIN === */}
-//             <div className="flex space-x-4">
-//               <SocialLink href="https://facebook.com/your-id" Icon={Facebook} />
-//               <SocialLink href="https://x.com/itz_avi__?t=iJAMQtbR7g0-l6BSWs7dwQ&s=08" Icon={Twitter} />
-//               <SocialLink href="https://www.instagram.com/zero_emotions_.0" Icon={Instagram} />
-//               <SocialLink href="https://www.linkedin.com/in/amanverma7869/" Icon={Linkedin} />
-//             </div>
-//           </div>
-
-//         </div>
-
-//         {/* Bottom Bar */}
-//         <div className="flex flex-col sm:flex-row justify-between items-center border-t pt-6 mt-8">
-//           <p className="text-sm text-muted-foreground">
-//             &copy; {new Date().getFullYear()} MockPrep AI. All rights reserved.
-//           </p>
-//           <div className="flex items-center space-x-4 mt-4 sm:mt-0">
-//             <FooterLink to="/privacy-policy">Privacy Policy</FooterLink>
-//             <FooterLink to="/terms-of-service">Terms of Service</FooterLink>
-//             {/* <ModeToggle /> <-- AUR YAHAN SE BHI HATA DIYA GAYA HAI */}
-//           </div>
-//         </div>
-//       </div>
-//     </footer>
-//   );
-// };
-
-
-
-
-
-
 import React from "react";
-
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react"; // Import Lucide icons
 import { Link } from "react-router-dom";
 import { Container } from "./container";
 import { MainRoutes } from "../lib/helpers";
-
-// import { Container } from "@/components/container";
-// import { MainRoutes } from "@/lib/helpers";
 
 interface SocialLinkProps {
   href: string;
@@ -215,6 +99,11 @@ export const Footer = () => {
           </div>
         </div>
       </Container>
+      <div className="w-full text-center mt-8 pt-6 border-t border-gray-700">
+        <p className="text-sm text-gray-400">
+          &copy; {new Date().getFullYear()} Avi Verma. All Rights Reserved.
+        </p>
+      </div>
     </div>
   );
 };
