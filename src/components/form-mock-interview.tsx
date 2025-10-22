@@ -27,8 +27,10 @@ import {
   doc,
   serverTimestamp,
   updateDoc,
+  deleteDoc, // <-- PROBLEM 2: DeleteDoc import karein
 } from "firebase/firestore";
 import { db } from "../config/firebase.config";
+
 interface FormMockInterviewProps {
   initialData: Interview | null;
 }
@@ -44,6 +46,7 @@ const formSchema = z.object({
   techStack: z.string().min(1, "Tech stack must be at least a character"),
 });
 type FormData = z.infer<typeof formSchema>;
+
 export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -53,6 +56,7 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { userId } = useAuth();
+
   const title = initialData
     ? initialData.position
     : "Create a new mock interview";
@@ -61,25 +65,34 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
   const toastMessage = initialData
     ? { title: "Updated..!", description: "Changes saved successfully..." }
     : { title: "Created..!", description: "New Mock Interview created..." };
+
+  // --- PROBLEM 1: FIX CLEAN AI RESPONSE FUNCTION ---
   const cleanAiResponse = (responseText: string) => {
-    // Step 1: Trim any surrounding whitespace
     let cleanText = responseText.trim();
-    // Step 2: Remove any occurrences of "json" or code block symbols (``` or `)
-    cleanText = cleanText.replace(/(json|```|`)/g, "");
-    // Step 3: Extract a JSON array by capturing text between square brackets
-    const jsonArrayMatch = cleanText.match(/\[.*\]/);
-    if (jsonArrayMatch) {
-      cleanText = jsonArrayMatch[0];
+
+    // AI response se JSON array ko extract karein
+    const firstBracket = cleanText.indexOf("[");
+    const lastBracket = cleanText.lastIndexOf("]");
+
+    if (firstBracket !== -1 && lastBracket !== -1 && lastBracket > firstBracket) {
+      cleanText = cleanText.substring(firstBracket, lastBracket + 1);
     } else {
-      throw new Error("No JSON array found in response");
+      // Agar array nahi mila toh error throw karein
+      throw new Error("No valid JSON array found in AI response");
     }
-    // Step 4: Parse the clean JSON text into an array of objects
+
+    // Extra ```json ya ``` ko remove karein
+    cleanText = cleanText.replace(/^(```json|```)/, "").replace(/(```)$/, "");
+    cleanText = cleanText.trim();
+
     try {
       return JSON.parse(cleanText);
     } catch (error) {
+      console.error("Failed to parse cleaned JSON:", cleanText); // Debugging ke liye log
       throw new Error("Invalid JSON format: " + (error as Error)?.message);
     }
   };
+
   const generateAiResponse = async (data: FormData) => {
     const prompt = `
         As an experienced prompt engineer, generate a JSON array containing 5 technical interview questions along with detailed answers based on the following job information. Each object in the array should have the fields "question" and "answer", formatted as follows:
@@ -97,6 +110,7 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
     const cleanedResponse = cleanAiResponse(aiResult.response.text());
     return cleanedResponse;
   };
+
   const onSubmit = async (data: FormData) => {
     try {
       setLoading(true);
@@ -133,6 +147,35 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
       setLoading(false);
     }
   };
+
+  // --- PROBLEM 2: ADD DELETE FUNCTION ---
+  const handleDelete = async () => {
+    if (!initialData) return;
+
+    // User se confirmation lena
+    if (
+      !window.confirm(
+        `Are you sure you want to delete the "${initialData.position}" interview?`
+      )
+    ) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await deleteDoc(doc(db, "interviews", initialData.id));
+      toast.success("Deleted!", {
+        description: "Interview deleted successfully.",
+      });
+      navigate("/generate", { replace: true }); // Dashboard par wapas bhejein
+    } catch (error) {
+      console.error("Error deleting document: ", error);
+      toast.error("Error", { description: "Failed to delete interview." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (initialData) {
       form.reset({
@@ -143,6 +186,7 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
       });
     }
   }, [initialData, form]);
+
   return (
     <div className="w-full flex-col space-y-4">
       <CustomBreadCrumb
@@ -152,8 +196,20 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
       <div className="mt-4 flex items-center justify-between w-full">
         <Headings title={title} isSubHeading />
         {initialData && (
-          <Button size={"icon"} variant={"ghost"}>
-            <Trash2 className="min-w-4 min-h-4 text-red-500" />
+          // --- PROBLEM 2: UPDATE DELETE BUTTON ---
+          <Button
+            type="button" // Type "button" rakhein taaki form submit na ho
+            size={"icon"}
+            variant={"ghost"}
+            onClick={handleDelete} // onClick handler add karein
+            disabled={loading} // Loading state mein disable karein
+          >
+            {/* Loading state add karein */}
+            {loading ? (
+              <Loader className="min-w-4 min-h-4 animate-spin" />
+            ) : (
+              <Trash2 className="min-w-4 min-h-4 text-red-500" />
+            )}
           </Button>
         )}
       </div>
@@ -164,6 +220,7 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full p-8 rounded-lg flex-col flex items-start justify-start gap-6 shadow-md "
         >
+          {/* ... (Saare FormField waise hi rahenge) ... */}
           <FormField
             control={form.control}
             name="position"
@@ -250,14 +307,17 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
             )}
           />
           <div className="w-full flex items-center justify-end gap-6">
+            {/* --- PROBLEM 3: UPDATE RESET BUTTON --- */}
             <Button
-              type="reset"
+              type="button" // Type "reset" se "button" karein
               size={"sm"}
               variant={"outline"}
               disabled={isSubmitting || loading}
+              onClick={() => form.reset()} // form.reset() ko manually call karein
             >
               Reset
             </Button>
+
             <Button
               type="submit"
               size={"sm"}
