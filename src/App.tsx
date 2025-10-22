@@ -1,7 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { injectSpeedInsights } from "@vercel/speed-insights";
 
-injectSpeedInsights();
 // Relative paths for CRA
 import { PublicLayout } from "./layouts/public-layout";
 import AuthenticationLayout from "./layouts/auth-layout";
@@ -21,7 +19,9 @@ import { MockLoadPage } from "./routes/mock-load-page";
 import { MockInterviewPage } from "./routes/mock-interview-page";
 import { Feedback } from "./routes/feedback";
 import { ComingSoonPage } from "./routes/coming-soon"; 
+import { injectSpeedInsights } from "@vercel/speed-insights";
 
+injectSpeedInsights();
 const App = () => {
   return (
     <Router>
