@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { injectSpeedInsights } from "@vercel/speed-insights";
 
+injectSpeedInsights();
 // Relative paths for CRA
 import { PublicLayout } from "./layouts/public-layout";
 import AuthenticationLayout from "./layouts/auth-layout";
