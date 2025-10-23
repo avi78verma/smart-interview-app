@@ -27,7 +27,7 @@ import {
   doc,
   serverTimestamp,
   updateDoc,
-  deleteDoc, // <-- PROBLEM 2: DeleteDoc import karein
+  deleteDoc,
 } from "firebase/firestore";
 import { db } from "../config/firebase.config";
 
@@ -66,46 +66,50 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
     ? { title: "Updated..!", description: "Changes saved successfully..." }
     : { title: "Created..!", description: "New Mock Interview created..." };
 
-  // --- PROBLEM 1: FIX CLEAN AI RESPONSE FUNCTION ---
   const cleanAiResponse = (responseText: string) => {
     let cleanText = responseText.trim();
-
-    // AI response se JSON array ko extract karein
     const firstBracket = cleanText.indexOf("[");
     const lastBracket = cleanText.lastIndexOf("]");
 
     if (firstBracket !== -1 && lastBracket !== -1 && lastBracket > firstBracket) {
       cleanText = cleanText.substring(firstBracket, lastBracket + 1);
     } else {
-      // Agar array nahi mila toh error throw karein
       throw new Error("No valid JSON array found in AI response");
     }
-
-    // Extra ```json ya ``` ko remove karein
     cleanText = cleanText.replace(/^(```json|```)/, "").replace(/(```)$/, "");
     cleanText = cleanText.trim();
 
     try {
       return JSON.parse(cleanText);
     } catch (error) {
-      console.error("Failed to parse cleaned JSON:", cleanText); // Debugging ke liye log
+      console.error("Failed to parse cleaned JSON:", cleanText);
       throw new Error("Invalid JSON format: " + (error as Error)?.message);
     }
   };
 
+  // --- UPDATE KIYA HUA PROMPT ---
   const generateAiResponse = async (data: FormData) => {
     const prompt = `
-        As an experienced prompt engineer, generate a JSON array containing 5 technical interview questions along with detailed answers based on the following job information. Each object in the array should have the fields "question" and "answer", formatted as follows:
+        As an experienced prompt engineer, generate a JSON array containing 8 interview questions along with detailed answers based on the following job information.
+        
+        The questions must follow this structure:
+        1.  The first question should ALWAYS be a general introductory question (e.g., "Tell me about yourself," or "Walk me through your resume.").
+        2.  The next 7 questions should be technical questions based on the job info provided, increasing in difficulty.
+
+        Each object in the array must have the fields "question" and "answer", formatted as follows:
         [
           { "question": "<Question text>", "answer": "<Answer text>" },
           ...
         ]
+
         Job Information:
         - Job Position: ${data?.position}
         - Job Description: ${data?.description}
         - Years of Experience Required: ${data?.experience}
         - Tech Stacks: ${data?.techStack}
-        The questions should assess skills in ${data?.techStack} development and best practices, problem-solving, and experience handling complex requirements. Please format the output strictly as an array of JSON objects without any additional labels, code blocks, or explanations. Return only the JSON array with questions and answers.`;
+
+        Return only the JSON array. Do not add any extra text or code blocks.`;
+    
     const aiResult = await chatSession.sendMessage(prompt);
     const cleanedResponse = cleanAiResponse(aiResult.response.text());
     return cleanedResponse;
@@ -125,7 +129,6 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
           toast(toastMessage.title, { description: toastMessage.description });
         }
       } else {
-        // create a new mock interview
         if (isValid) {
           const aiResult = await generateAiResponse(data);
           await addDoc(collection(db, "interviews"), {
@@ -148,11 +151,8 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
     }
   };
 
-  // --- PROBLEM 2: ADD DELETE FUNCTION ---
   const handleDelete = async () => {
     if (!initialData) return;
-
-    // User se confirmation lena
     if (
       !window.confirm(
         `Are you sure you want to delete the "${initialData.position}" interview?`
@@ -160,14 +160,13 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
     ) {
       return;
     }
-
     setLoading(true);
     try {
       await deleteDoc(doc(db, "interviews", initialData.id));
       toast.success("Deleted!", {
         description: "Interview deleted successfully.",
       });
-      navigate("/generate", { replace: true }); // Dashboard par wapas bhejein
+      navigate("/generate", { replace: true });
     } catch (error) {
       console.error("Error deleting document: ", error);
       toast.error("Error", { description: "Failed to delete interview." });
@@ -196,15 +195,13 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
       <div className="mt-4 flex items-center justify-between w-full">
         <Headings title={title} isSubHeading />
         {initialData && (
-          // --- PROBLEM 2: UPDATE DELETE BUTTON ---
           <Button
-            type="button" // Type "button" rakhein taaki form submit na ho
+            type="button"
             size={"icon"}
             variant={"ghost"}
-            onClick={handleDelete} // onClick handler add karein
-            disabled={loading} // Loading state mein disable karein
+            onClick={handleDelete}
+            disabled={loading}
           >
-            {/* Loading state add karein */}
             {loading ? (
               <Loader className="min-w-4 min-h-4 animate-spin" />
             ) : (
@@ -220,7 +217,7 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full p-8 rounded-lg flex-col flex items-start justify-start gap-6 shadow-md "
         >
-          {/* ... (Saare FormField waise hi rahenge) ... */}
+          {/* ... (Saare FormFields waise hi rahenge) ... */}
           <FormField
             control={form.control}
             name="position"
@@ -307,17 +304,15 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
             )}
           />
           <div className="w-full flex items-center justify-end gap-6">
-            {/* --- PROBLEM 3: UPDATE RESET BUTTON --- */}
             <Button
-              type="button" // Type "reset" se "button" karein
+              type="button"
               size={"sm"}
               variant={"outline"}
               disabled={isSubmitting || loading}
-              onClick={() => form.reset()} // form.reset() ko manually call karein
+              onClick={() => form.reset()}
             >
               Reset
             </Button>
-
             <Button
               type="submit"
               size={"sm"}

@@ -73,10 +73,13 @@ export const QuestionSection = ({ questions }: QuestionSectionProps) => {
               />
             </div>
 
+            {/* --- YAHAN HUMNE PROPS ADD KIYE --- */}
             <RecordAnswer
               question={tab}
               isWebCam={isWebCam}
               setIsWebCam={setIsWebCam}
+              questionIndex={i}
+              totalQuestions={questions.length}
             />
           </TabsContent>
         ))}

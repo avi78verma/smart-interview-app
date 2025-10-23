@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import useSpeechToText, { ResultType } from "react-hook-speech-to-text";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom"; // useNavigate import karein
 import WebCam from "react-webcam";
 import { TooltipButton } from "./tooltip-button";
 import { toast } from "sonner";
@@ -26,19 +26,26 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../config/firebase.config";
+
 interface RecordAnswerProps {
   question: { question: string; answer: string };
   isWebCam: boolean;
   setIsWebCam: (value: boolean) => void;
+  questionIndex: number; // Naya prop
+  totalQuestions: number; // Naya prop
 }
+
 interface AIResponse {
   ratings: number;
   feedback: string;
 }
+
 export const RecordAnswer = ({
   question,
   isWebCam,
   setIsWebCam,
+  questionIndex, // Naya prop
+  totalQuestions, // Naya prop
 }: RecordAnswerProps) => {
   const {
     interimResult,
@@ -50,6 +57,7 @@ export const RecordAnswer = ({
     continuous: true,
     useLegacyResults: false,
   });
+
   const [userAnswer, setUserAnswer] = useState("");
   const [isAiGenerating, setIsAiGenerating] = useState(false);
   const [aiResult, setAiResult] = useState<AIResponse | null>(null);
@@ -57,6 +65,8 @@ export const RecordAnswer = ({
   const [loading, setLoading] = useState(false);
   const { userId } = useAuth();
   const { interviewId } = useParams();
+  const navigate = useNavigate(); // useNavigate hook
+
   const recordUserAnswer = async () => {
     if (isRecording) {
       stopSpeechToText();
@@ -77,19 +87,15 @@ export const RecordAnswer = ({
       startSpeechToText();
     }
   };
+
   const cleanJsonResponse = (responseText: string) => {
-    // Step 1: Trim any surrounding whitespace
     let cleanText = responseText.trim();
-
-    // Step 2: Remove any occurrences of "json" or code block symbols (``` or `)
     cleanText = cleanText.replace(/(json|```|`)/g, "");
-
-    // Step 3: Parse the clean JSON text into an array of objects
     try {
       return JSON.parse(cleanText);
     } catch (error) {
-        const err = error as Error;
-        throw new Error("Invalid JSON format: " + err.message);
+      const err = error as Error;
+      throw new Error("Invalid JSON format: " + err.message);
     }
   };
 
@@ -127,9 +133,12 @@ export const RecordAnswer = ({
     stopSpeechToText();
     startSpeechToText();
   };
+
+  // --- YEH FUNCTION UPDATE HUA HAI ---
   const saveUserAnswer = async () => {
     setLoading(true);
     if (!aiResult) {
+      setLoading(false);
       return;
     }
     const currentQuestion = question.question;
@@ -141,13 +150,11 @@ export const RecordAnswer = ({
         where("question", "==", currentQuestion)
       );
       const querySnap = await getDocs(userAnswerQuery);
-      // if the user already answerd the question dont save it again
+      
       if (!querySnap.empty) {
-        console.log("Query Snap Size", querySnap.size);
         toast.info("Already Answered", {
           description: "You have already answered this question",
         });
-        return;
       } else {
         // save the user answer
         await addDoc(collection(db, "userAnswers"), {
@@ -162,30 +169,48 @@ export const RecordAnswer = ({
         });
         toast("Saved", { description: "Your answer has been saved.." });
       }
+
       setUserAnswer("");
       stopSpeechToText();
+
+      // --- NAYA LOGIC YAHAN ADD HUA ---
+      if (questionIndex + 1 === totalQuestions) {
+        // Yeh aakhiri question tha
+        toast.success("Interview Finished!", {
+          description: "Redirecting to your feedback page...",
+        });
+        // Feedback page par navigate karo
+        navigate(`/generate/feedback/${interviewId}`, { replace: true });
+      } else {
+        // Aakhiri question nahi tha, toh bas modal band karo
+        setOpen(false);
+      }
+      
     } catch (error) {
       toast("Error", {
-        description: "An error occurred while generating feedback.",
+        description: "An error occurred while saving your feedback.",
       });
       console.log(error);
+      setOpen(false); // Error par bhi modal band karo
     } finally {
       setLoading(false);
-      setOpen(!open);
+      // setOpen(!open); // Yeh line yahan se hata di gayi hai
     }
   };
+
   useEffect(() => {
     if (results) {
-        // Explicitly type the filtered results to help TypeScript
-        const filteredResults: ResultType[] = (results as any[]).filter(
-            (result): result is ResultType => result && typeof result === 'object' && 'transcript' in result
-        );
-        const combineTranscripts = filteredResults
-            .map((result) => result.transcript)
-            .join(" ");
-        setUserAnswer(combineTranscripts);
+      const filteredResults: ResultType[] = (results as any[]).filter(
+        (result): result is ResultType =>
+          result && typeof result === "object" && "transcript" in result
+      );
+      const combineTranscripts = filteredResults
+        .map((result) => result.transcript)
+        .join(" ");
+      setUserAnswer(combineTranscripts);
     }
   }, [results]);
+
   return (
     <div className="w-full flex flex-col items-center gap-8 mt-4">
       {/* save modal */}
@@ -257,6 +282,7 @@ export const RecordAnswer = ({
 
         <p className="text-sm mt-2 text-gray-700 whitespace-normal">
           {userAnswer || "Start recording to see your ansewer here"}
+        _
         </p>
 
         {interimResult && (
