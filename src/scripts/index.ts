@@ -7,7 +7,7 @@ const apiKey = process.env.REACT_APP_GEMINI_API_KEY!;
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash", // Humne model ka naam fix kar diya
+  model: "gemini-2.5-pro", 
 });
 const generationConfig = {
   temperature: 1,
